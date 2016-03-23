@@ -3,6 +3,21 @@
 // import modules
 var request = require('request');
 
+// helper function to get the middle value for finding centroids
+var getMeanCoordinate = function(coordinate01, coordinate02){
+
+  // make sure they are both floating point
+  var coord01 = parseFloat(coordinate01),
+    coord02 = parseFloat(coordinate02);
+
+  // get the difference between the two numbers
+  var meanDifference = Math.abs(coord01 - coord02) / 2;
+
+  // add the difference to the minimum coordinate and return the result
+  return (Math.min(coord01, coord02) + meanDifference);
+
+};
+
 // get and return the reach
 var getReach = function (reachId, callback) {
 
@@ -45,33 +60,52 @@ var getReachGeoJson = function (reachId, callback) {
       'tags': null
     };
 
-    // create the putin and takeout features and add them to the geojson
+    // create the putin and takeout features and add them to the geojson if they exist in the data
+    if(jsonInfo.plon && jsonInfo.plat) {
+      attributes.tags = 'access, putin';
+      geoJson.features.push({
+        'type': 'Feature',
+        'geometry': {
+          'type': 'Point',
+          'coordinates': [
+            parseFloat(jsonInfo.plon),
+            parseFloat(jsonInfo.plat)
+          ]
+        },
+        'properties': JSON.parse(JSON.stringify(attributes))
+      });
+    }
 
-    attributes.tags = 'access, putin';
-    geoJson.features.push({
-      'type': 'Feature',
-      'geometry': {
-        'type': 'Point',
-        'coordinates': [
-          jsonInfo.plon,
-          jsonInfo.plat
-        ]
-      },
-      'properties': JSON.parse(JSON.stringify(attributes))
-    });
+    if(jsonInfo.tlon && jsonInfo.tlat){
+      attributes.tags = 'access, takeout';
+      geoJson.features.push({
+        'type': 'Feature',
+        'geometry': {
+          'type': 'Point',
+          'coordinates': [
+            parseFloat(jsonInfo.tlon),
+            parseFloat(jsonInfo.tlat)
+          ]
+        },
+        'properties': JSON.parse(JSON.stringify(attributes))
+      });
+    }
 
-    attributes.tags = 'access, takeout';
-    geoJson.features.push({
-      'type': 'Feature',
-      'geometry': {
-        'type': 'Point',
-        'coordinates': [
-          jsonInfo.tlon,
-          jsonInfo.tlat
-        ]
-      },
-      'properties': JSON.parse(JSON.stringify(attributes))
-    });
+    // if both the putin and takeout exist, create a centroid
+    if(jsonInfo.plon && jsonInfo.plat && jsonInfo.tlon && jsonInfo.tlat){
+      attributes.tags = 'centroid'
+      geoJson.features.push({
+        'type': 'Feature',
+        'geometry': {
+          'type': 'Point',
+          'coordinates': [
+            getMeanCoordinate(jsonInfo.plon, jsonInfo.tlon),
+            getMeanCoordinate(jsonInfo.plat, jsonInfo.tlat)
+          ]
+        },
+        'properties': JSON.parse(JSON.stringify(attributes))
+      });
+    }
     
     // if the rapids key exists in the response JSON
     if (responseJson.CContainerViewJSON_view.hasOwnProperty('CRiverRapidsGadgetJSON_view-rapids')) {
@@ -129,8 +163,8 @@ var getReachGeoJson = function (reachId, callback) {
           'geometry': {
             'type': 'Point',
             'coordinates': [
-              rapids[i].rlat,
-              rapids[i].rlon
+              parseFloat(rapids[i].rlon),
+              parseFloat(rapids[i].rlat)
             ]
           },
           'properties': JSON.parse(JSON.stringify(attributes))
