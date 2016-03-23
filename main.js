@@ -52,7 +52,8 @@ var getReachGeoJson = function (reachId, callback) {
     var attributes = {
       'reachId': jsonInfo.id,
       'river': jsonInfo.river,
-      'name': jsonInfo.section,
+      'section': jsonInfo.section,
+      'name': null,
       'altname': jsonInfo.altname,
       'abstract': jsonInfo.abstract,
       'difficulty': jsonInfo.class,
@@ -93,7 +94,7 @@ var getReachGeoJson = function (reachId, callback) {
 
     // if both the putin and takeout exist, create a centroid
     if(jsonInfo.plon && jsonInfo.plat && jsonInfo.tlon && jsonInfo.tlat){
-      attributes.tags = 'centroid'
+      attributes.tags = 'centroid';
       geoJson.features.push({
         'type': 'Feature',
         'geometry': {
@@ -117,6 +118,7 @@ var getReachGeoJson = function (reachId, callback) {
       attributes = {
         'reachId': jsonInfo.id,
         'river': jsonInfo.river,
+        'section': jsonInfo.section,
         'name': null,
         'altname': null,
         'abstract': null,
