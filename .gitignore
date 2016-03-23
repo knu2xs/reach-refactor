@@ -59,3 +59,8 @@ node_modules
 
 # Development resources
 resources
+
+# zip files
+*.zip
+*.7z
+*tar.gz
