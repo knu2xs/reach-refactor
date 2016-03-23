@@ -7,7 +7,10 @@ var expect = require('chai').expect,
 // use canyon creek as an example
 var canyonCreekId = 3306;
 
-describe('Main reach refactor module', function() {
+describe('Canyon Creek', function() {
+
+  // use canyon creek as an example
+  var canyonCreekId = 3306;
 
   describe('get reach', function (){
     it('retrieves reach data', function(){
@@ -25,8 +28,8 @@ describe('Main reach refactor module', function() {
     });
   });
 
-  describe('get reach GeoJson', function(){
-    it('retrieves and refactors reach data into GeoJSON', function(){
+  describe('get river name', function(){
+    it('tests if river name is in the feature properties', function(){
 
       // get the JSON
       main.getReachGeoJson(canyonCreekId, function(responseGeoJson){
@@ -36,6 +39,23 @@ describe('Main reach refactor module', function() {
 
         // ensure it actually is canyon creek
         expect(riverName).to.equal('Canyon Creek (Lewis River trib.)');
+
+      });
+
+    })
+  });
+
+  describe('get putin coordinates', function(){
+    it('tests if putin coordinates are correct', function(){
+
+      // get the JSON
+      main.getReachGeoJson(canyonCreekId, function(responseGeoJson){
+
+        // pull out the name from the first feature
+        var riverName = responseGeoJson.features[0].geometry.coordinates;
+
+        // ensure it actually is canyon creek
+        expect(riverName).to.equal([-122.316, 45.94]);
 
       });
 

@@ -37,16 +37,17 @@ var getReachGeoJson = function (reachId, callback) {
     var attributes = {
       'reachId': jsonInfo.id,
       'river': jsonInfo.river,
-      'section': jsonInfo.section,
+      'name': jsonInfo.section,
       'altname': jsonInfo.altname,
       'abstract': jsonInfo.abstract,
       'difficulty': jsonInfo.class,
-      'type': ''
+      'description': jsonInfo.description,
+      'tags': null
     };
 
     // create the putin and takeout features and add them to the geojson
 
-    attributes.type = 'putin';
+    attributes.tags = 'access, putin';
     geoJson.features.push({
       'type': 'Feature',
       'geometry': {
@@ -56,10 +57,10 @@ var getReachGeoJson = function (reachId, callback) {
           jsonInfo.plat
         ]
       },
-      'properties': attributes
+      'properties': JSON.parse(JSON.stringify(attributes))
     });
 
-    attributes.type = 'takeout';
+    attributes.tags = 'access, takeout';
     geoJson.features.push({
       'type': 'Feature',
       'geometry': {
@@ -69,8 +70,74 @@ var getReachGeoJson = function (reachId, callback) {
           jsonInfo.tlat
         ]
       },
-      'properties': attributes
+      'properties': JSON.parse(JSON.stringify(attributes))
     });
+    
+    // if the rapids key exists in the response JSON
+    if (responseJson.CContainerViewJSON_view.hasOwnProperty('CRiverRapidsGadgetJSON_view-rapids')) {
+
+      // save the rapids array to a variable
+      var rapids = responseJson.CContainerViewJSON_view['CRiverRapidsGadgetJSON_view-rapids'].rapids;
+
+      // set the attributes
+      attributes = {
+        'reachId': jsonInfo.id,
+        'river': jsonInfo.river,
+        'name': null,
+        'altname': null,
+        'abstract': null,
+        'difficulty': null,
+        'description': null,
+        'tags': null
+      };
+
+      // iterate the rapids...more just points of interest, really
+      for (var i = 0; i < rapids.length; i++){
+
+        // variable to store list of potential tags
+        var tags = [];
+
+        // check for properties and add relevant to tags
+        if(rapids[i].isaccess){
+          tags.push('access, intermediate');
+        }
+        if(rapids[i].isportage){
+          tags.push('portage');
+        }
+        if(rapids[i].ishazard){
+          tags.push('hazard');
+        }
+        if(rapids[i].iswaterfall){
+          tags.push('waterfall');
+        }
+        if(rapids[i].isplayspot){
+          tags.push('playspot');
+        }
+        if(rapids[i].difficulty){
+          tags.push('rapid');
+        }
+
+        // set attribute properties
+        attributes.name = rapids[i].name;
+        attributes.difficulty = rapids[i].difficulty;
+        attributes.description = rapids[i].description;
+        attributes.tags = tags.join(', ');
+
+        // add a rapid
+        geoJson.features.push({
+          'type': 'Feature',
+          'geometry': {
+            'type': 'Point',
+            'coordinates': [
+              rapids[i].rlat,
+              rapids[i].rlon
+            ]
+          },
+          'properties': JSON.parse(JSON.stringify(attributes))
+        });
+
+      }
+    }
 
     // invoke the callback with the new GeoJSON
     callback(geoJson);

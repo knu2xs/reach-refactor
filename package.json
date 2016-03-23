@@ -11,7 +11,8 @@
     "mocha": "^2.4.5"
   },
   "scripts": {
-    "test": "mocha --reporter spec"
+    "test": "mocha test",
+    "3066": "test/run_me.js"
   },
   "repository": {
     "type": "git",
