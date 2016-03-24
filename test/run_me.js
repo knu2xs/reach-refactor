@@ -12,8 +12,3 @@ main.getReachGeoJson(3066, function(geoJson){
 main.getReachGeoJson(193, function(geoJson){
   fs.writeFile('../resources/geojson193.json', JSON.stringify(geoJson, null, '  '));
 });
-
-// deliberately invalid
-main.getReach(100000, function(responseBody){
-  fs.writeFile('../resources/invalid.json', JSON.stringify(responseBody, null, '  '));
-});
