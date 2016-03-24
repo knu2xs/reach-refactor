@@ -30,7 +30,8 @@ var getReach = function (reachId, callback) {
       if (!err && res.statusCode == 200) {
         callback(body);
       }
-    });
+    }
+  );
 };
 
 // reformat reach with selected additional attributes as a GeoJSON Feature Set
@@ -178,12 +179,11 @@ var getReachGeoJson = function (reachId, callback) {
     // invoke the callback with the new GeoJSON
     callback(geoJson);
 
-  }); // getReach
+  }); // getReachGeoJson
 
 };
 
 // expose functionality externally
 module.exports = {
-  getReach: getReach,
   getReachGeoJson: getReachGeoJson
 };
