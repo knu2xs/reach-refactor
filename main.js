@@ -131,48 +131,50 @@ var getReachGeoJson = function (reachId, callback) {
       // iterate the rapids...more just points of interest, really
       for (var i = 0; i < rapids.length; i++){
 
-        // variable to store list of potential tags
-        var tags = [];
+        // account for points at 0, 0
+        if (rapids[i].rlon != 0 && rapids[i].rlat != 0){
+          // variable to store list of potential tags
+          var tags = [];
 
-        // check for properties and add relevant to tags
-        if(rapids[i].isaccess){
-          tags.push('access, intermediate');
-        }
-        if(rapids[i].isportage){
-          tags.push('portage');
-        }
-        if(rapids[i].ishazard){
-          tags.push('hazard');
-        }
-        if(rapids[i].iswaterfall){
-          tags.push('waterfall');
-        }
-        if(rapids[i].isplayspot){
-          tags.push('playspot');
-        }
-        if(rapids[i].difficulty){
-          tags.push('rapid');
-        }
+          // check for properties and add relevant to tags
+          if(rapids[i].isaccess){
+            tags.push('access, intermediate');
+          }
+          if(rapids[i].isportage){
+            tags.push('portage');
+          }
+          if(rapids[i].ishazard){
+            tags.push('hazard');
+          }
+          if(rapids[i].iswaterfall){
+            tags.push('waterfall');
+          }
+          if(rapids[i].isplayspot){
+            tags.push('playspot');
+          }
+          if(rapids[i].difficulty){
+            tags.push('rapid');
+          }
 
-        // set attribute properties
-        attributes.name = rapids[i].name;
-        attributes.difficulty = rapids[i].difficulty;
-        attributes.description = rapids[i].description;
-        attributes.tags = tags.join(', ');
+          // set attribute properties
+          attributes.name = rapids[i].name;
+          attributes.difficulty = rapids[i].difficulty;
+          attributes.description = rapids[i].description;
+          attributes.tags = tags.join(', ');
 
-        // add a rapid
-        geoJson.features.push({
-          'type': 'Feature',
-          'geometry': {
-            'type': 'Point',
-            'coordinates': [
-              parseFloat(rapids[i].rlon),
-              parseFloat(rapids[i].rlat)
-            ]
-          },
-          'properties': JSON.parse(JSON.stringify(attributes))
-        });
-
+          // add a rapid
+          geoJson.features.push({
+            'type': 'Feature',
+            'geometry': {
+              'type': 'Point',
+              'coordinates': [
+                parseFloat(rapids[i].rlon),
+                parseFloat(rapids[i].rlat)
+              ]
+            },
+            'properties': JSON.parse(JSON.stringify(attributes))
+          });
+        }
       }
     }
 
